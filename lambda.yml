@@ -1,17 +1,17 @@
 ---
 Parameters:
   WAFDescription:
-			Type: String
+			Type: "String"
 			Description: Description for WAF purpose and general use
 
 Resources:
 	SampleWAF:
-		Type: AWS::WAF::WebACL
+		Type: 'AWS::WAF::WebACL'
 		Properties:
-			DefaultAction: ALLOW
+			DefaultAction: "ALLOW"
 			Name: SampleWAF
 			Rules:
-				- Action: ALLOW
+				- Action: 'ALLOW'
 					Priority: 1
 					RuleId: BasicWAFRule
 

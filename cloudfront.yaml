@@ -6,8 +6,8 @@ Parameters:
 
 Resources:
 	SampleWAF:
-		Type: AWS::WAF::WebACL
-		Properties:
+    Type: AWS::WAF::WebACL
+    Properties:
 			DefaultAction: ALLOW
 			Name: SampleWAF
 			Rules:
