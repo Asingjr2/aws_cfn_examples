@@ -1,0 +1,38 @@
+---
+Parameters:
+  UserName:
+    Type: String
+    Description: Desired user name 
+
+
+Resources:
+  ExceptIAMGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: Non-Admin-Group
+
+  ExceptIAMUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Ref UserName
+      Groups:
+        - !Ref ExceptIAMGroup
+
+  ExceptIAMPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      Groups: 
+        - !Ref ExceptIAMGroup
+      PolicyName: all-but-iam-policy
+      PolicyDocument:
+        Statement:
+          - Sid: "AllowAll"
+            Effect: Allow
+            Action:
+              - "*"
+            Resource: "*"
+          - Sid: "DenyAllIAM"
+            Effect: Deny
+            Action:
+              - "iam:*"
+            Resource: "*"

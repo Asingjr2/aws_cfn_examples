@@ -1,0 +1,94 @@
+---
+Parameters:
+  SecretKey:
+    Type: String
+    Description: Private KMS key 
+
+  ProjectKeyPair:
+    Type: AWS::EC2::KeyPair::KeyName
+  
+  ProjectAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Description: Desired amiID for latest amazon image.
+    Default: "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+
+
+Resources:
+  DemoS3:
+    Type: AWS::S3::Bucket
+      Properties:
+        BucketName: demo-project-bucket
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+                KMSMasterKeyID: !Ref SecretKey
+                SSEAlgorithm: AES256
+        Tags: 
+          - Key: Name
+            Value: DemoS3S
+
+  DemoLambdaRole:
+    Type: AWS::IAM::Role
+      Properties: 
+        AssumeRolePolicyDocument: 
+          Version: "2012-10-17"
+          Statement: 
+            - Effect: Allow
+              Principal: 
+                Service: 
+                  - ec2.amazonaws.com
+              Action: sts:AssumeRole
+        Tags:
+          - Key: Name
+            Value: DemoLambdaRole
+
+  DemoPolicy:
+    Type: AWS::IAM::Policy
+    DependsOn: !Ref DemoLambdaRole
+    Properties: 
+      PolicyName: demo-project-ec2-policy
+      PolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Effect: "Allow"
+            Action: "*ec2:*"
+            Resource: "*"
+      Roles: !Ref DemoLambdaRole
+
+  DemoLambda:
+    Type: AWS::Lambda::Function
+      Properties:
+        KmsKeyArn: !Ref SecretKey
+        Runtime: python3.6
+        Role: !Ref DemoLambdaRole
+        Handler: index.handler
+        Code:
+          ZipFile: |
+            print("Hello World")
+        Tags:
+          - Key: Name
+            Value: DemoLambda
+
+  DemoEBS:
+    Type: AWS::EC2::Volume
+    Properties: 
+      Size: 10
+      VolumeType: io1
+      Iops: 100
+      AvailabilityZone: us-east-1
+      Encrypted: true
+      KmsKeyId: !Ref SecretKey
+      Tags:
+        - Key: Name
+          Value: DemoEBS
+  
+  DemoEC2:
+      Type: AWS::EC2::Instance
+      Properties: 
+        ImageId: !Ref ProjectAmiId
+        KeyName: !Ref ProjectKeyPair
+        InstanceType: t2.micro
+        Tags:
+          - Key: Name
+            Value: DemoEC2
