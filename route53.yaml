@@ -1,0 +1,45 @@
+---
+Parameters:
+  DomainName:
+    Type: String
+    Description: Enter name of owned domain
+
+  VPCId:
+    Type: AWS::EC2::VPC::Id
+    Description: Enter VPC id
+  
+  ELBId:
+    Type: String
+    Description: Enter ELB id
+  
+  StandaloneEC2PublicIP:
+    Type: String
+    Description: Enter EC2 instance public ip
+
+
+Resources:
+  DemoProjectHostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties:
+      Name: !Ref DomainName
+      VPCs:
+        - !Ref VPCId
+  
+  DemoProjectRecordSetELB:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: !Ref DomainName
+      HostedZoneId: !Ref DemoProjectHostedZone
+      AliasTarget: !Ref ELBId
+      Type: A
+      TTL: 300
+  
+  DemoProjectRecordSetEC2:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: !Ref DomainName
+      HostedZoneId: !Ref DemoProjectHostedZone
+      Type: A
+      TTL: 300
+      ResourceRecords:
+        - !Ref StandaloneEC2PublicIP
