@@ -1,36 +1,57 @@
 ---
 Parameters:
-  WAFDescription:
-			Type: "String"
-			Description: Description for WAF purpose and general use
+	FirstDemoProjectLambdaName:
+		Type: String
+		Description: Name of first demo project lambda
+	
+	SecondDemoProjectLambdaName:
+		Type: String
+		Description: Name of second demo project lambda
+	
+	SecondLambdaCodeBucket:
+		Type: String
+		Description: Location of bucket holding code for second lambda
+
+	SecondLambdaCodePath:
+		Type: String
+		Description: Location of code for second lambda
 
 Resources:
-	SampleWAF:
-		Type: 'AWS::WAF::WebACL'
+	FirstDemoProjectLambda:
+		Type: AWS::Lambda::Function
 		Properties:
-			DefaultAction: "ALLOW"
-			Name: SampleWAF
-			Rules:
-				- Action: 'ALLOW'
-					Priority: 1
-					RuleId: BasicWAFRule
+			FunctionName: !Ref FirstDemoProjectLambdaName
+			Description: Demo project first sample lambda function
+			Runtime: python3.6
+			Role: 
+			Handler: index.handler
+			Code: 
+				Zipfile: | 
+					"""Sample aws lambda function."""
+					import json
 
-	SampleCloudfront:
-		Type: AWS::Cloudfront:Distribution
+					def handler(event, context):
+					"""Returns sample data with 200 response."""
+							data = {
+									"response" : 200,
+									"message" : "Thanks for creating a demo lambda function"
+							}
+
+							return data
+			Tags: 
+				- Key: Name
+					Value: !Ref FirstDemoProjectLambda
+			
+	SecondDemoProjectLambda:
+		Type: AWS::Lambda::Function
 		Properties:
-			DistributionConfig:
-				WebACLId: !Ref SampleWAF
-				Origins:
-					- DomainName: "sampleDomain.com"
-						Id: sampleOrigin
-						CustomOriginConfig:
-						  HTTPPort: 80
-							HTTPSPort: 443
-							OriginProtocolPolicy: http-only
-				Enabled: true
-        DefaultRootObject: index.html
-				CustomErrorResponses: 
-					- ErrorCode: 404
-						ResponsePagePath: "/error-pages/404.html"
-						ResponseCode: 200
-						ErrorCachingMinTTL: 30
+			FunctionName: !Ref SecondDemoProjectLambdaName
+			Description: Demo project first sample lambda function
+			Runtime: python3.6
+			Role: 
+			Handler: index.handler
+			Code: 
+				S3Bucket: !Ref SecondLambdaCodeBucket
+				S3Key: !Ref SecondLambdaCodePath
+				- Key: Name
+					Value: !Ref SecondDemoProjectLambdaName

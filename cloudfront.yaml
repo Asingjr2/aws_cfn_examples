@@ -21,7 +21,7 @@ Resources:
 			DistributionConfig:
 				WebACLId: !Ref SampleWAF
 				Origins:
-					- DomainName: "sampleDomain.com"
+					- DomainName: sampleDomain.com
 						Id: sampleOrigin
 						CustomOriginConfig:
 							HTTPPort: 80

@@ -9,7 +9,7 @@ Resources:
   ExceptIAMGroup:
     Type: AWS::IAM::Group
     Properties:
-      GroupName: Non-Admin-Group
+      GroupName: Some-Demo-Group
 
   ExceptIAMUser:
     Type: AWS::IAM::User

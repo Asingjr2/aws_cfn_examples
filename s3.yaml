@@ -1,0 +1,68 @@
+---
+Parameters:
+  BucketBaseExampleName:
+    Type: String
+    Description: Name for base s3 bucket
+
+  BucketEncryptedExampleName:
+    Type: String
+    Description: Name for encrypted s3 bucket
+  
+  BucketHostingExampleName:
+    Type: String
+    Description: Name for hosting s3 bucket
+  
+  BucketLifeCyleExampleName:
+    Type: String
+    Description: Name for life cycle s3 bucket
+
+
+Resources:
+  BaseBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketBaseExampleName
+      Tags: 
+				- Key: Name
+					Value: BaseBucket
+
+
+  EncryptedBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketEncryptedExampleName
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      Tags: 
+				- Key: Name
+					Value: EncryptedBucket
+
+  HostingBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketHostingExampleName
+      WebsiteConfiguration:
+        ErrorDocument: error.html
+        IndexDocument: index.html
+      Tags: 
+				- Key: Name
+					Value: HostingBucket
+
+  LifeCycleBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketLifeCyleExampleName
+      LifecycleConfiguration:
+        Rules:
+          Prefix: sample_prefix
+          ExpirationInDays: 7
+          Transitions:
+            StorageClass: Glacier
+            TransitionInDays: 30
+      Tags: 
+				- Key: Name
+					Value: LifeCycleBucket
+
+    
